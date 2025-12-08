@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<h3 class="fw-semibold mb-3">Record Sale</h3>
+
+<div class="card shadow-sm border-0 p-4">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Product</label>
+            <input type="text" class="form-control" value="{{ product.name }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quantity Sold</label>
+            <input type="number" name="quantity_sold" min="1" max="{{ product.quantity }}" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Record</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-semibold">Products</h3>
+    <a href="{% url 'product_create' %}" class="btn btn-primary">Add Product</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Selling Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.selling_price }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a href="{% url 'record_sale' product.id %}" class="btn btn-success" title="Record Sale">
+                                📊 Sale
+                            </a>
+                            <a href="{% url 'product_edit' product.id %}" class="btn btn-outline-primary" title="Edit Product">
+                                ✏️ Edit
+                            </a>
+                            <a href="{% url 'product_delete' product.id %}" class="btn btn-outline-danger" title="Delete Product">
+                                🗑️ Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-3">
+                        No products found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

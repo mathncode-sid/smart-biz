@@ -1,0 +1,85 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card shadow-sm p-5" style="width: 450px;">
+        <h3 class="fw-semibold text-center mb-4">Confirm Subscription</h3>
+
+        <!-- Plan Details -->
+        <div class="bg-light p-4 rounded mb-4">
+            <div class="row mb-3">
+                <div class="col-6">
+                    <p class="text-muted small mb-1">Plan</p>
+                    <h5 class="fw-semibold">{{ plan.name }}</h5>
+                </div>
+                <div class="col-6 text-end">
+                    <p class="text-muted small mb-1">Price</p>
+                    {% if plan.price == 0 %}
+                    <h5 class="fw-semibold">Free</h5>
+                    {% else %}
+                    <h5 class="fw-semibold">KES {{ plan.price }}</h5>
+                    {% endif %}
+                </div>
+            </div>
+            <hr class="my-3">
+            <p class="text-muted small mb-0">{{ plan.description }}</p>
+        </div>
+
+        <!-- Duration Info -->
+        <div class="alert alert-info mb-4">
+            <small>
+                ✓ This subscription is valid for <strong>{{ plan.duration_days }} days</strong> from the date of purchase.
+            </small>
+        </div>
+
+        <!-- Features -->
+        <div class="mb-4">
+            <h6 class="fw-semibold mb-3">You'll get access to:</h6>
+            <ul class="list-unstyled small">
+                {% if plan.name == 'Free' %}
+                <li class="mb-2">• Up to 50 products</li>
+                <li class="mb-2">• Basic sales tracking</li>
+                <li class="mb-2">• Limited analytics</li>
+                <li class="mb-2">• Email support</li>
+                {% elif plan.name == 'Basic' %}
+                <li class="mb-2">• Up to 500 products</li>
+                <li class="mb-2">• Advanced sales tracking</li>
+                <li class="mb-2">• Real-time analytics</li>
+                <li class="mb-2">• Low stock alerts</li>
+                <li class="mb-2">• Priority email support</li>
+                {% elif plan.name == 'Premium' %}
+                <li class="mb-2">• Unlimited products</li>
+                <li class="mb-2">• Advanced analytics & reports</li>
+                <li class="mb-2">• Custom alerts & notifications</li>
+                <li class="mb-2">• API access</li>
+                <li class="mb-2">• 24/7 priority support</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <form method="POST" class="d-grid gap-2">
+            {% csrf_token %}
+            
+            <button type="submit" class="btn btn-primary btn-lg">
+                {% if plan.price == 0 %}
+                Activate Free Plan
+                {% else %}
+                Subscribe Now (Coming Soon)
+                {% endif %}
+            </button>
+            <a href="{% url 'subscription_plans' %}" class="btn btn-outline-secondary">
+                Back to Plans
+            </a>
+        </form>
+
+        <!-- Payment Note -->
+        {% if plan.price > 0 %}
+        <p class="text-center text-muted small mt-3 mb-0">
+            💳 Payment integration coming soon. For now, you can explore the platform.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

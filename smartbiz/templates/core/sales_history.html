@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<h3 class="fw-semibold mb-4">Sales History</h3>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Quantity Sold</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ sale.product.name }}</td>
+                    <td>{{ sale.quantity_sold }}</td>
+                    <td>KES {{ sale.total_price }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-3">
+                        No sales recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

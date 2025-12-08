@@ -1,0 +1,93 @@
+{% extends "core/admin_base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-semibold">Business Owner Accounts</h3>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm border-0 mb-4 p-3">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label">Filter by Status</label>
+            <select class="form-select form-select-sm" onchange="window.location.href='?status=' + this.value + '&subscription={{ sub_filter }}'">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Users</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Filter by Subscription</label>
+            <select class="form-select form-select-sm" onchange="window.location.href='?status={{ status_filter }}&subscription=' + this.value">
+                <option value="all" {% if sub_filter == 'all' %}selected{% endif %}>All Subscriptions</option>
+                <option value="active" {% if sub_filter == 'active' %}selected{% endif %}>Active Subscriptions</option>
+                <option value="expired" {% if sub_filter == 'expired' %}selected{% endif %}>Expired Subscriptions</option>
+                <option value="none" {% if sub_filter == 'none' %}selected{% endif %}>No Subscription</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Subscription</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <strong>{{ user.username }}</strong>
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.subscription %}
+                            {% if user.subscription.is_active %}
+                            <span class="badge bg-info">{{ user.subscription.plan.name }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ user.subscription.plan.name }} (Expired)</span>
+                            {% endif %}
+                        {% else %}
+                        <span class="badge bg-secondary">None</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'toggle_user_status' user.id %}" class="btn btn-outline-warning">
+                                {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </a>
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-info" title="View details">Details</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">
+                        No users found with current filters.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

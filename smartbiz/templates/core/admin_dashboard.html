@@ -1,0 +1,143 @@
+{% extends "core/admin_base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-semibold">Admin Dashboard</h3>
+    <div class="btn-group" role="group">
+        <a href="{% url 'admin_users' %}" class="btn btn-outline-primary btn-sm">Users</a>
+        <a href="{% url 'admin_subscriptions' %}" class="btn btn-outline-primary btn-sm">Subscriptions</a>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted">Total Users</h6>
+                <p class="fs-3 fw-bold">{{ total_users }}</p>
+                <small class="text-success">{{ active_users }} active</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted">Active Subscriptions</h6>
+                <p class="fs-3 fw-bold">{{ active_subscriptions }}</p>
+                <small class="text-muted">{{ total_subscriptions }} total</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted">Total Revenue</h6>
+                <p class="fs-3 fw-bold">KES {{ total_revenue }}</p>
+                <small class="text-info">From active subscriptions</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted">Due Renewals</h6>
+                <p class="fs-3 fw-bold text-warning">{{ due_subscriptions }}</p>
+                <small class="text-muted">Within 7 days</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Stats -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light p-3">
+                <h6 class="fw-semibold mb-0">User Statistics</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Active Users</p>
+                        <p class="fs-4 fw-bold text-success">{{ active_users }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Inactive Users</p>
+                        <p class="fs-4 fw-bold text-danger">{{ inactive_users }}</p>
+                    </div>
+                </div>
+                <hr>
+                <p class="mb-2">
+                    <strong>Growth:</strong> 
+                    <span class="badge bg-success">+{{ total_users }}</span>
+                </p>
+                <a href="{% url 'admin_users' %}" class="btn btn-outline-primary btn-sm w-100">
+                    Manage Users
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light p-3">
+                <h6 class="fw-semibold mb-0">Subscription Statistics</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Active Plans</p>
+                        <p class="fs-4 fw-bold text-success">{{ active_subscriptions }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Expired Plans</p>
+                        <p class="fs-4 fw-bold text-danger">{{ expired_subscriptions }}</p>
+                    </div>
+                </div>
+                <hr>
+                <p class="mb-2">
+                    <strong>Renewal Rate:</strong> 
+                    {% if total_subscriptions > 0 %}
+                        <span class="badge bg-info">
+                            {{ active_subscriptions|floatformat:0 }}%
+                        </span>
+                    {% else %}
+                        <span class="text-muted">N/A</span>
+                    {% endif %}
+                </p>
+                <a href="{% url 'admin_subscriptions' %}" class="btn btn-outline-primary btn-sm w-100">
+                    Manage Subscriptions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts Section -->
+<div class="row g-3 mt-3">
+    {% if due_subscriptions > 0 %}
+    <div class="col-12">
+        <div class="alert alert-warning alert-dismissible fade show">
+            <strong>⚠️ Action Required:</strong> {{ due_subscriptions }} subscription(s) expiring within 7 days.
+            <a href="{% url 'admin_subscriptions' %}?due=yes" class="alert-link">View details</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if inactive_users > 0 %}
+    <div class="col-12">
+        <div class="alert alert-info alert-dismissible fade show">
+            <strong>ℹ️ Info:</strong> {{ inactive_users }} user account(s) currently inactive.
+            <a href="{% url 'admin_users' %}?status=inactive" class="alert-link">View details</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

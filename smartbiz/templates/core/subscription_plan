@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<h3 class="fw-semibold mb-4">Choose a Subscription Plan</h3>
+
+<div class="row g-4">
+
+    {% for plan in plans %}
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 p-4 h-100">
+            <h4 class="fw-semibold">{{ plan.name }}</h4>
+            <p class="text-muted">{{ plan.description }}</p>
+
+            <p class="fs-4 fw-bold">{{ plan.price }}</p>
+            <p class="text-muted">Valid for {{ plan.duration_days }} days</p>
+
+            <a href="{% url 'subscribe' plan.id %}" class="btn btn-primary w-100 mt-3">
+                Select Plan
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

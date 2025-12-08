@@ -1,0 +1,103 @@
+{% extends "core/admin_base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-semibold">Subscription Management</h3>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm border-0 mb-4 p-3">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label">Filter by Status</label>
+            <select class="form-select form-select-sm" onchange="window.location.href='?status=' + this.value + '&due={{ due_filter }}'">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Subscriptions</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>Expired Only</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Filter by Renewal Date</label>
+            <select class="form-select form-select-sm" onchange="window.location.href='?status={{ status_filter }}&due=' + this.value">
+                <option value="no" {% if due_filter == 'no' %}selected{% endif %}>All Dates</option>
+                <option value="yes" {% if due_filter == 'yes' %}selected{% endif %}>Due Within 7 Days</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Subscriptions Table -->
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>User</th>
+                    <th>Plan</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in subscriptions %}
+                <tr>
+                    <td>
+                        <strong>{{ subscription.user.username }}</strong>
+                        <br>
+                        <small class="text-muted">{{ subscription.user.email }}</small>
+                    </td>
+                    <td>{{ subscription.plan.name }}</td>
+                    <td>{{ subscription.start_date|date:"M d, Y" }}</td>
+                    <td>
+                        {{ subscription.end_date|date:"M d, Y" }}
+                        {% if subscription.is_active %}
+                            {% now "Y-m-d" as today %}
+                            {% if subscription.end_date|date:"Y-m-d" < today %}
+                            {% else %}
+                                {% with days_left=subscription.end_date|add:"-today" %}
+                                    {% if days_left.days <= 7 and days_left.days >= 0 %}
+                                    <br><small class="text-warning">⚠️ {{ days_left.days }} days left</small>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if subscription.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Expired</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if subscription.plan.price == 0 %}
+                        Free
+                        {% else %}
+                        KES {{ subscription.plan.price }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'toggle_subscription_status' subscription.id %}" class="btn btn-outline-warning">
+                                {% if subscription.is_active %}Deactivate{% else %}Reactivate{% endif %}
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-3">
+                        No subscriptions found with current filters.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+        <h2 class="fw-semibold mb-2">Affordable Plans for Your Business</h2>
+        <p class="text-muted">Choose a plan that fits your business size. All plans include 30 days of access. Upgrade or downgrade anytime.</p>
+    </div>
+    {% if user_subscription %}
+    <a href="{% url 'subscription_status' %}" class="btn btn-outline-primary btn-sm">My Subscription</a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% for plan in plans %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 position-relative" style="transition: all 0.3s ease;">
+            {% if plan.price == 0 %}
+            <div class="position-absolute top-0 end-0">
+                <span class="badge bg-secondary m-3">FREE</span>
+            </div>
+            {% elif plan.name == 'Premium' %}
+            <div class="position-absolute top-0 end-0">
+                <span class="badge bg-warning m-3" style="color: #1f2937;">POPULAR</span>
+            </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <h4 class="card-title fw-semibold mb-2">{{ plan.name }}</h4>
+                <p class="text-muted small mb-4">{{ plan.description }}</p>
+                
+                <!-- Price -->
+                <div class="mb-4">
+                    {% if plan.price == 0 %}
+                    <span class="fs-2 fw-bold">Free</span>
+                    {% else %}
+                    <span class="fs-2 fw-bold">KES {{ plan.price }}</span>
+                    <span class="text-muted">/month</span>
+                    {% endif %}
+                </div>
+
+                <!-- Features -->
+                <div class="mb-4 flex-grow-1">
+                    <h6 class="fw-semibold mb-3">Includes:</h6>
+                    <ul class="list-unstyled">
+                        {% if plan.name == 'Free' %}
+                        <li class="mb-2">✓ Up to 50 products</li>
+                        <li class="mb-2">✓ Basic sales tracking</li>
+                        <li class="mb-2">✓ Limited analytics</li>
+                        <li class="mb-2">✓ Email support</li>
+                        {% elif plan.name == 'Basic' %}
+                        <li class="mb-2">✓ Up to 500 products</li>
+                        <li class="mb-2">✓ Advanced sales tracking</li>
+                        <li class="mb-2">✓ Real-time analytics</li>
+                        <li class="mb-2">✓ Low stock alerts</li>
+                        <li class="mb-2">✓ Priority email support</li>
+                        {% elif plan.name == 'Premium' %}
+                        <li class="mb-2">✓ Unlimited products</li>
+                        <li class="mb-2">✓ Advanced analytics & reports</li>
+                        <li class="mb-2">✓ Custom alerts & notifications</li>
+                        <li class="mb-2">✓ API access</li>
+                        <li class="mb-2">✓ 24/7 priority support</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- CTA Button -->
+                <div>
+                    {% if plan.price == 0 %}
+                    <a href="{% url 'renew_subscription' plan.id %}" class="btn btn-outline-primary w-100">
+                        Get Started
+                    </a>
+                    {% else %}
+                    <a href="{% url 'renew_subscription' plan.id %}" class="btn btn-primary w-100">
+                        Choose Plan
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No subscription plans available at the moment. Please try again later.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Comparison Table -->
+<div class="mt-5">
+    <h4 class="fw-semibold mb-4">Detailed Comparison</h4>
+    <div class="table-responsive">
+        <table class="table table-hover border">
+            <thead class="table-light">
+                <tr>
+                    <th>Feature</th>
+                    {% for plan in plans %}
+                    <th class="text-center">{{ plan.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Price</strong></td>
+                    {% for plan in plans %}
+                    <td class="text-center">
+                        {% if plan.price == 0 %}
+                        Free
+                        {% else %}
+                        KES {{ plan.price }}/mo
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Products</strong></td>
+                    <td class="text-center">50</td>
+                    <td class="text-center">500</td>
+                    <td class="text-center">Unlimited</td>
+                </tr>
+                <tr>
+                    <td><strong>Sales Tracking</strong></td>
+                    <td class="text-center">✓</td>
+                    <td class="text-center">✓ Advanced</td>
+                    <td class="text-center">✓ Advanced</td>
+                </tr>
+                <tr>
+                    <td><strong>Analytics</strong></td>
+                    <td class="text-center">Limited</td>
+                    <td class="text-center">✓ Real-time</td>
+                    <td class="text-center">✓ Advanced</td>
+                </tr>
+                <tr>
+                    <td><strong>Stock Alerts</strong></td>
+                    <td class="text-center">-</td>
+                    <td class="text-center">✓</td>
+                    <td class="text-center">✓ Custom</td>
+                </tr>
+                <tr>
+                    <td><strong>Support</strong></td>
+                    <td class="text-center">Email</td>
+                    <td class="text-center">Priority Email</td>
+                    <td class="text-center">24/7 Priority</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: all 0.3s ease !important;
+    }
+
+    .card:hover {
+        transform: translateY(-8px) !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f9fafb;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-5" style="max-width: 600px;">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">Welcome to SmartBiz! 🎉</h2>
+            <p class="text-muted">Get started with your sales management journey</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="text-center">
+                    <div class="display-4 mb-2">📦</div>
+                    <h5 class="fw-semibold">Add Products</h5>
+                    <p class="text-muted small">Track your inventory and set prices</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <div class="display-4 mb-2">💰</div>
+                    <h5 class="fw-semibold">Record Sales</h5>
+                    <p class="text-muted small">Log every transaction and track profits</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <div class="display-4 mb-2">📊</div>
+                    <h5 class="fw-semibold">View Analytics</h5>
+                    <p class="text-muted small">Monitor your business performance</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <div class="display-4 mb-2">🔒</div>
+                    <h5 class="fw-semibold">Secure & Private</h5>
+                    <p class="text-muted small">Your data is safe with us</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-light p-4 rounded mb-4">
+            <h5 class="fw-semibold mb-3">Getting Started:</h5>
+            <ol class="mb-0">
+                <li>Choose a subscription plan</li>
+                <li>Add your products to the inventory</li>
+                <li>Record your sales</li>
+                <li>Monitor your analytics</li>
+            </ol>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'subscription_plans' %}" class="btn btn-primary btn-lg">
+                Choose a Plan
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                Skip for Now
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-semibold">Delete Product</h3>
+    <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
+</div>
+
+<div class="card shadow-sm border-0 p-4" style="max-width: 500px;">
+    <div class="alert alert-danger mb-4">
+        <h5 class="alert-heading">⚠️ Confirm Deletion</h5>
+        <p class="mb-0">Are you sure you want to delete this product? This action cannot be undone.</p>
+    </div>
+
+    <div class="bg-light p-3 rounded mb-4">
+        <p class="mb-2">
+            <strong>Product Name:</strong> {{ product.name }}
+        </p>
+        <p class="mb-2">
+            <strong>Current Stock:</strong> {{ product.quantity }} units
+        </p>
+        <p class="mb-0">
+            <strong>Selling Price:</strong> KES {{ product.selling_price }}
+        </p>
+    </div>
+
+    <form method="POST" class="d-grid gap-2">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-lg">
+            Yes, Delete This Product
+        </button>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+            No, Keep It
+        </a>
+    </form>
+</div>
+
+{% endblock %}

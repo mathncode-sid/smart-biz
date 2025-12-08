@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<h3 class="fw-semibold mb-4">Renew Subscription</h3>
+
+<div class="card shadow-sm border-0 p-4" style="max-width: 450px;">
+    <p><strong>Current Plan:</strong> {{ subscription.plan.name }}</p>
+    <p><strong>End Date:</strong> {{ subscription.end_date }}</p>
+
+    <p class="text-muted mt-3">Select a plan to continue using SmartBiz.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Choose Plan</label>
+            <select name="plan_id" class="form-select">
+                {% for plan in plans %}
+                <option value="{{ plan.id }}">{{ plan.name }} ({{ plan.price }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Renew Now</button>
+    </form>
+</div>
+
+{% endblock %}

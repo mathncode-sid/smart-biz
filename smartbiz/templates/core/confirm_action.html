@@ -1,0 +1,55 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card shadow-sm p-4" style="width: 420px;">
+        <h4 class="fw-semibold text-center mb-4">Confirm Action</h4>
+
+        {% if user %}
+        <div class="card bg-light border-0 mb-4">
+            <div class="card-body">
+                <p class="mb-0">
+                    <strong>User:</strong> {{ user.username }}<br>
+                    <strong>Email:</strong> {{ user.email }}
+                </p>
+                <hr class="my-2">
+                {% if user.is_active %}
+                <p class="text-danger mb-0">This will <strong>deactivate</strong> the user account.</p>
+                {% else %}
+                <p class="text-success mb-0">This will <strong>activate</strong> the user account.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if subscription %}
+        <div class="card bg-light border-0 mb-4">
+            <div class="card-body">
+                <p class="mb-0">
+                    <strong>User:</strong> {{ subscription.user.username }}<br>
+                    <strong>Plan:</strong> {{ subscription.plan.name }}<br>
+                    <strong>End Date:</strong> {{ subscription.end_date|date:"M d, Y" }}
+                </p>
+                <hr class="my-2">
+                {% if subscription.is_active %}
+                <p class="text-danger mb-0">This will <strong>deactivate</strong> the subscription.</p>
+                {% else %}
+                <p class="text-success mb-0">This will <strong>reactivate</strong> the subscription.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="d-grid gap-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                {% if user and user.is_active %}Deactivate User{% elif user %}Activate User{% elif subscription and subscription.is_active %}Deactivate Subscription{% else %}Reactivate Subscription{% endif %}
+            </button>
+            <a href="{% if user %}{% url 'admin_users' %}{% else %}{% url 'admin_subscriptions' %}{% endif %}" class="btn btn-outline-secondary">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
