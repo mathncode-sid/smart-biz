@@ -1,39 +1,248 @@
 {% extends "core/base.html" %}
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-semibold">{% if product %}Edit Product{% else %}Add Product{% endif %}</h3>
-    <a href="{% url 'product_list' %}" class="btn btn-secondary">Back</a>
+<style>
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-header {
+        animation: slideInUp 0.6s ease-out;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .form-card {
+        animation: slideInUp 0.6s ease-out 0.1s;
+        animation-fill-mode: both;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: none !important;
+        max-width: 600px;
+    }
+
+    .form-card .card-header {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 12px 12px 0 0;
+        padding: 1.5rem;
+    }
+
+    .form-card .card-header h5 {
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .form-card .card-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        animation: slideInUp 0.6s ease-out;
+        animation-fill-mode: both;
+        margin-bottom: 1.75rem;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.15s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.25s; }
+    .form-group:nth-child(4) { animation-delay: 0.3s; }
+    .form-group:nth-child(5) { animation-delay: 0.35s; }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .form-help {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.4rem;
+    }
+
+    .form-help strong {
+        color: #374151;
+    }
+
+    .button-group {
+        animation: slideInUp 0.6s ease-out 0.4s;
+        animation-fill-mode: both;
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-action {
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+        color: white;
+        flex: 1;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-cancel {
+        background: #f3f4f6;
+        color: #374151;
+        flex: 1;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cancel:hover {
+        background: #e5e7eb;
+    }
+
+    .info-box {
+        animation: slideInUp 0.6s ease-out 0.35s;
+        animation-fill-mode: both;
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        border-left: 4px solid #2563EB;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #1e40af;
+    }
+
+    .price-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            max-width: 100%;
+        }
+
+        .price-inputs {
+            grid-template-columns: 1fr;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h3 class="fw-semibold mb-1">
+        {% if product %}
+            ✏️ Edit Product
+        {% else %}
+            ➕ Add New Product
+        {% endif %}
+    </h3>
+    <p class="text-muted small">Manage your product inventory with detailed pricing information</p>
 </div>
 
-<div class="card shadow-sm border-0" style="max-width: 500px;">
-    <div class="card-body p-4">
+<div class="form-card card">
+    <div class="card-header">
+        <h5>📦 Product Details</h5>
+    </div>
+
+    <div class="card-body">
         <form method="POST">
             {% csrf_token %}
 
-            <div class="mb-3">
-                <label class="form-label">Product Name</label>
-                <input type="text" name="name" class="form-control" value="{% if product %}{{ product.name }}{% endif %}" required>
+            <div class="form-group">
+                <label class="form-label">
+                    <span>📝</span> Product Name
+                </label>
+                <input type="text" name="name" class="form-control" value="{% if product %}{{ product.name }}{% endif %}" placeholder="e.g., Rice (10kg bag)" required>
+                <div class="form-help">Give your product a clear, descriptive name</div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Quantity</label>
-                <input type="number" name="quantity" class="form-control" min="0" value="{% if product %}{{ product.quantity }}{% else %}0{% endif %}">
+            <div class="form-group">
+                <label class="form-label">
+                    <span>📦</span> Quantity in Stock
+                </label>
+                <input type="number" name="quantity" class="form-control" min="0" value="{% if product %}{{ product.quantity }}{% else %}0{% endif %}" placeholder="e.g., 50" required>
+                <div class="form-help">Current number of units available. You can update this when stock changes.</div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Buying Price</label>
-                <input type="number" name="buying_price" class="form-control" step="0.01" value="{% if product %}{{ product.buying_price }}{% endif %}" required>
+            <div class="form-group">
+                <label class="form-label">💰 Pricing Information</label>
+                <div class="price-inputs">
+                    <div>
+                        <label class="form-label" style="font-weight: 500; margin-bottom: 0.4rem;">
+                            Buying Price (Cost)
+                        </label>
+                        <input type="number" name="buying_price" class="form-control" step="0.01" value="{% if product %}{{ product.buying_price }}{% endif %}" placeholder="0.00" required>
+                        <div class="form-help">Price you pay to acquire this product</div>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-weight: 500; margin-bottom: 0.4rem;">
+                            Selling Price
+                        </label>
+                        <input type="number" name="selling_price" class="form-control" step="0.01" value="{% if product %}{{ product.selling_price }}{% endif %}" placeholder="0.00" required>
+                        <div class="form-help">Price customers pay for this product</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Selling Price</label>
-                <input type="number" name="selling_price" class="form-control" step="0.01" value="{% if product %}{{ product.selling_price }}{% endif %}" required>
+            <div class="button-group">
+                <button type="submit" class="btn-action btn-submit">
+                    {% if product %}✓ Update Product{% else %}✓ Add Product{% endif %}
+                </button>
+                <a href="{% url 'product_list' %}" class="btn-action btn-cancel">Cancel</a>
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">{% if product %}Update Product{% else %}Add Product{% endif %}</button>
-                <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            <div class="info-box">
+                💡 <strong>Pro Tip:</strong> Keep your pricing competitive. Your margin (Selling Price - Buying Price) is your profit per unit.
             </div>
         </form>
     </div>
