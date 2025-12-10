@@ -1,23 +1,330 @@
 {% extends "core/base.html" %}
 {% block content %}
 
-<h3 class="fw-semibold mb-3">Record Sale</h3>
+<style>
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-<div class="card shadow-sm border-0 p-4">
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label class="form-label">Product</label>
-            <input type="text" class="form-control" value="{{ product.name }}" disabled>
-        </div>
+    .page-header {
+        animation: slideInUp 0.6s ease-out;
+        margin-bottom: 2rem;
+    }
 
-        <div class="mb-3">
-            <label class="form-label">Quantity Sold</label>
-            <input type="number" name="quantity_sold" min="1" max="{{ product.quantity }}" class="form-control" required>
-        </div>
+    .form-card {
+        animation: slideInUp 0.6s ease-out 0.1s;
+        animation-fill-mode: both;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        max-width: 500px;
+    }
 
-        <button type="submit" class="btn btn-primary">Record</button>
-    </form>
+    .form-card .card-header {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .form-card .card-header h5 {
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .product-info {
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        border-left: 4px solid #2563EB;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .product-info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .product-info-label {
+        color: #6b7280;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .product-info-value {
+        color: #1f2937;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group {
+        animation: slideInUp 0.6s ease-out;
+        animation-fill-mode: both;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.15s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.25s; }
+
+    .input-helper {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.35rem;
+    }
+
+    .quantity-counter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quantity-counter button {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-counter button:hover {
+        background: #eff6ff;
+        border-color: #2563EB;
+        color: #2563EB;
+    }
+
+    .button-group {
+        animation: slideInUp 0.6s ease-out 0.3s;
+        animation-fill-mode: both;
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-submit {
+        flex: 1;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit.primary {
+        background: #2563EB;
+        color: white;
+    }
+
+    .btn-submit.primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-submit.secondary {
+        background: #f3f4f6;
+        color: #374151;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-submit.secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .quantity-info {
+        font-size: 0.85rem;
+        color: #6b7280;
+        padding: 0.5rem 0.75rem;
+        background: #f3f4f6;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+    .error-msg {
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-top: 0.35rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            max-width: 100%;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h3 class="fw-semibold mb-1">Record Sale</h3>
+    <p class="text-muted small">Enter the details for this transaction</p>
 </div>
+
+<div class="form-card card border-0">
+    <div class="card-header p-3">
+        <h5>📊 {{ product.name }}</h5>
+    </div>
+
+    <div class="card-body p-4">
+        <!-- Product Information -->
+        <div class="product-info">
+            <div class="product-info-item">
+                <span class="product-info-label">Product</span>
+                <span class="product-info-value">{{ product.name }}</span>
+            </div>
+            <div class="product-info-item">
+                <span class="product-info-label">Available Stock</span>
+                <span class="product-info-value">
+                    {% if product.quantity == 0 %}
+                        <span style="color: #dc2626;">Out of Stock</span>
+                    {% elif product.quantity < 10 %}
+                        <span style="color: #f59e0b;">{{ product.quantity }} units (Low)</span>
+                    {% else %}
+                        <span style="color: #10b981;">{{ product.quantity }} units</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="product-info-item">
+                <span class="product-info-label">Selling Price</span>
+                <span class="product-info-value">KES {{ product.selling_price }}</span>
+            </div>
+        </div>
+
+        <!-- Sale Form -->
+        <form method="POST" id="saleForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">📦 Quantity Sold</label>
+                <div class="quantity-counter">
+                    <button type="button" id="decreaseBtn" class="qty-btn">−</button>
+                    <input type="number" id="quantityInput" name="quantity_sold" min="1" max="{{ product.quantity }}" class="form-control" required style="flex: 1; text-align: center;">
+                    <button type="button" id="increaseBtn" class="qty-btn">+</button>
+                </div>
+                <div class="quantity-info">
+                    Max: {{ product.quantity }} units
+                </div>
+                {% if product.quantity == 0 %}
+                <div class="error-msg">⚠️ This product is out of stock</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">💰 Total Sale Amount</label>
+                <div class="form-control" style="background: #f9fafb; border: 2px solid #e5e7eb; color: #2563EB; font-weight: 600; font-size: 1.25rem;">
+                    KES <span id="totalAmount">0</span>
+                </div>
+                <div class="input-helper">Calculated automatically based on quantity and price</div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit primary" {% if product.quantity == 0 %}disabled{% endif %}>
+                    ✓ Record Sale
+                </button>
+                <a href="{% url 'product_list' %}" class="btn-submit secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const quantityInput = document.getElementById('quantityInput');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const maxQuantity = {{ product.quantity }};
+    const pricePerUnit = {{ product.selling_price }};
+
+    function updateTotal() {
+        const quantity = parseInt(quantityInput.value) || 0;
+        const total = quantity * pricePerUnit;
+        totalAmountSpan.textContent = total.toLocaleString();
+    }
+
+    function updateButtonStates() {
+        const quantity = parseInt(quantityInput.value) || 0;
+        decreaseBtn.disabled = quantity <= 1;
+        increaseBtn.disabled = quantity >= maxQuantity;
+    }
+
+    increaseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = parseInt(quantityInput.value) || 0;
+        if (current < maxQuantity) {
+            quantityInput.value = current + 1;
+            updateTotal();
+            updateButtonStates();
+        }
+    });
+
+    decreaseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = parseInt(quantityInput.value) || 0;
+        if (current > 1) {
+            quantityInput.value = current - 1;
+            updateTotal();
+            updateButtonStates();
+        }
+    });
+
+    quantityInput.addEventListener('change', () => {
+        let value = parseInt(quantityInput.value) || 0;
+        if (value > maxQuantity) value = maxQuantity;
+        if (value < 1) value = 1;
+        quantityInput.value = value;
+        updateTotal();
+        updateButtonStates();
+    });
+
+    // Initialize
+    quantityInput.value = 1;
+    updateTotal();
+    updateButtonStates();
+</script>
 
 {% endblock %}
