@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.core.serializers.json import DjangoJSONEncoder
 from functools import wraps
+import json
 from .models import Product, Sale, Subscription, SubscriptionPlan
 from .utils import subscription_required
 
@@ -11,19 +13,83 @@ from .utils import subscription_required
 @login_required
 @subscription_required
 def dashboard(request):
-    today = timezone.now().date()
-    sales_today = Sale.objects.filter(user=request.user, created_at__date=today)
-    total_today = sum(s.total_price for s in sales_today)
-    products = Product.objects.filter(user=request.user)
+    from datetime import timedelta
+    from django.db.models import Sum, Count, Q
     
-    # Count products with low stock (less than 10 units)
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=7)
+    thirty_days_ago = today - timedelta(days=30)
+    
+    # Today's sales
+    sales_today = Sale.objects.filter(user=request.user, created_at__date=today)
+    total_today = sales_today.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    
+    # This week's sales (last 7 days)
+    sales_week = Sale.objects.filter(user=request.user, created_at__date__gte=seven_days_ago)
+    total_week = sales_week.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    
+    # This month's sales (last 30 days)
+    sales_month = Sale.objects.filter(user=request.user, created_at__date__gte=thirty_days_ago)
+    total_month = sales_month.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    
+    # All time sales
+    all_sales = Sale.objects.filter(user=request.user)
+    total_all_time = all_sales.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    all_time_transactions = all_sales.count()
+    
+    # Products metrics
+    products = Product.objects.filter(user=request.user)
     low_stock_count = products.filter(quantity__lt=10).count()
-
+    out_of_stock = products.filter(quantity=0).count()
+    
+    # Top selling products
+    top_products = Sale.objects.filter(user=request.user).values('product__name').annotate(
+        total_sold=Sum('quantity_sold'),
+        revenue=Sum('total_price')
+    ).order_by('-revenue')[:5]
+    
+    # Daily sales data for chart (last 7 days)
+    daily_sales = {}
+    for i in range(7):
+        date = today - timedelta(days=6-i)
+        daily_sales[date.strftime('%a')] = Sale.objects.filter(
+            user=request.user,
+            created_at__date=date
+        ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+    
+    # Sales trends
+    sales_count_today = sales_today.count()
+    sales_count_week = sales_week.count()
+    avg_sale_value = total_week / sales_count_week if sales_count_week > 0 else 0
+    
+    # Calculate healthy stock (not low, not out)
+    in_stock_count = products.count() - low_stock_count - out_of_stock
+    stock_health_percent = (in_stock_count / products.count() * 100) if products.count() > 0 else 0
+    
+    # Daily average
+    daily_average = (total_week - total_today) / 6 if total_week > total_today else 0
+    
+    # Convert daily_sales to JSON for JavaScript
+    daily_sales_json = json.dumps(daily_sales, cls=DjangoJSONEncoder)
+    
     context = {
         "sales_today": sales_today,
-        "total_today": total_today,
+        "total_today": int(total_today),
+        "total_week": int(total_week),
+        "total_month": int(total_month),
+        "total_all_time": int(total_all_time),
+        "all_time_transactions": all_time_transactions,
         "products": products,
         "low_stock_count": low_stock_count,
+        "out_of_stock": out_of_stock,
+        "in_stock_count": in_stock_count,
+        "stock_health_percent": int(stock_health_percent),
+        "top_products": top_products,
+        "daily_sales": daily_sales_json,
+        "sales_count_today": sales_count_today,
+        "sales_count_week": sales_count_week,
+        "avg_sale_value": int(avg_sale_value),
+        "daily_average": int(daily_average),
     }
     return render(request, "core/dashboard.html", context)
 
