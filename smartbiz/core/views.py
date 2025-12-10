@@ -68,6 +68,7 @@ def dashboard(request):
     
     # Daily average
     daily_average = (total_week - total_today) / 6 if total_week > total_today else 0
+    daily_average_percent = (daily_average / total_week * 100) if total_week > 0 else 0
     
     # Convert daily_sales to JSON for JavaScript
     daily_sales_json = json.dumps(daily_sales, cls=DjangoJSONEncoder)
@@ -90,6 +91,7 @@ def dashboard(request):
         "sales_count_week": sales_count_week,
         "avg_sale_value": int(avg_sale_value),
         "daily_average": int(daily_average),
+        "daily_average_percent": int(daily_average_percent),
     }
     return render(request, "core/dashboard.html", context)
 
