@@ -1,32 +1,279 @@
 {% extends "core/base.html" %}
 {% block content %}
 
-<h3 class="fw-semibold mb-4">Sales History</h3>
+<style>
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-<div class="card shadow-sm border-0">
+    .page-header {
+        animation: slideInUp 0.6s ease-out;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .filter-section {
+        animation: slideInUp 0.6s ease-out 0.1s;
+        animation-fill-mode: both;
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .filter-section .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    .filter-section .form-control,
+    .filter-section .form-select {
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .filter-section .form-control:focus,
+    .filter-section .form-select:focus {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .filter-btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .sales-table {
+        animation: slideInUp 0.6s ease-out 0.2s;
+        animation-fill-mode: both;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: none !important;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 2px solid #e5e7eb;
+        padding: 1rem !important;
+    }
+
+    .table td {
+        padding: 1rem !important;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+        transform: scale(1.01);
+    }
+
+    .date-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #eff6ff;
+        color: #1e40af;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .quantity-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .price-badge {
+        font-weight: 600;
+        color: #10b981;
+        font-size: 1.05rem;
+    }
+
+    .summary-cards {
+        animation: slideInUp 0.6s ease-out 0.15s;
+        animation-fill-mode: both;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #2563EB;
+    }
+
+    .summary-card.total {
+        border-left-color: #10b981;
+    }
+
+    .summary-card.average {
+        border-left-color: #06b6d4;
+    }
+
+    .summary-card.count {
+        border-left-color: #f59e0b;
+    }
+
+    .summary-card-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-card-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .empty-state {
+        animation: slideInUp 0.6s ease-out 0.3s;
+        animation-fill-mode: both;
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .filter-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .summary-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h3 class="fw-semibold mb-1">Sales History</h3>
+    <p class="text-muted small">Track all your sales transactions and analyze your business performance</p>
+</div>
+
+<!-- Summary Cards -->
+{% if sales %}
+<div class="summary-cards">
+    <div class="summary-card total">
+        <div class="summary-card-label">Total Revenue</div>
+        <div class="summary-card-value">KES {{ total_revenue|default:"0" }}</div>
+    </div>
+    <div class="summary-card average">
+        <div class="summary-card-label">Average Sale</div>
+        <div class="summary-card-value">KES {{ average_sale|default:"0" }}</div>
+    </div>
+    <div class="summary-card count">
+        <div class="summary-card-label">Total Transactions</div>
+        <div class="summary-card-value">{{ sales.count }}</div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Sales Table -->
+<div class="sales-table card">
     <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <th>Date</th>
+                    <th>Date & Time</th>
                     <th>Product</th>
                     <th>Quantity Sold</th>
                     <th>Total Price</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for sale in sales %}
                 <tr>
-                    <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ sale.product.name }}</td>
-                    <td>{{ sale.quantity_sold }}</td>
-                    <td>KES {{ sale.total_price }}</td>
+                    <td>
+                        <span class="date-badge">
+                            {{ sale.created_at|date:"M d, h:i A" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="product-name">{{ sale.product.name }}</span>
+                    </td>
+                    <td>
+                        <span class="quantity-badge">{{ sale.quantity_sold }} unit{{ sale.quantity_sold|pluralize }}</span>
+                    </td>
+                    <td>
+                        <span class="price-badge">KES {{ sale.total_price }}</span>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-3">
-                        No sales recorded yet.
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📉</div>
+                            <div class="empty-state-title">No Sales Yet</div>
+                            <p class="empty-state-text">Start recording sales to see them here and track your business performance</p>
+                            <a href="{% url 'product_list' %}" class="btn btn-primary">Go to Products</a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
