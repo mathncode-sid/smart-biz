@@ -1,77 +1,190 @@
 {% extends "core/base.html" %}
 {% block content %}
-<h3 class="fw-semibold mb-4">Dashboard</h3>
 
-<div class="row g-4 mb-4">
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6 class="text-muted">Total Sales Today</h6>
-                <p class="fs-3 fw-bold">KES {{ total_today }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6 class="text-muted">Total Products</h6>
-                <p class="fs-3 fw-bold">{{ products.count }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6 class="text-muted">Low Stock Alerts</h6>
-                <p class="fs-3 fw-bold">{{ low_stock_count }}</p>
-            </div>
-        </div>
-    </div>
-
+<div class="mb-4">
+    <h3 class="fw-semibold mb-1">Dashboard</h3>
+    <p class="text-muted small">Welcome back! Here's your business overview.</p>
 </div>
 
-<div class="row g-4">
+<!-- Key Metrics Cards -->
+<div class="row g-3 mb-5">
+    <!-- Today's Sales -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="text-muted small mb-2">Today's Sales</h6>
+                        <p class="fs-2 fw-bold text-primary mb-0">KES {{ total_today }}</p>
+                    </div>
+                    <span style="font-size: 24px;">📊</span>
+                </div>
+                <small class="text-muted">{{ sales_count_today }} transaction{{ sales_count_today|pluralize }}</small>
+            </div>
+        </div>
+    </div>
 
-    <div class="col-lg-8">
+    <!-- This Week -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="text-muted small mb-2">This Week</h6>
+                        <p class="fs-2 fw-bold text-info mb-0">KES {{ total_week }}</p>
+                    </div>
+                    <span style="font-size: 24px;">📈</span>
+                </div>
+                <small class="text-muted">{{ sales_count_week }} transaction{{ sales_count_week|pluralize }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- This Month -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="text-muted small mb-2">This Month</h6>
+                        <p class="fs-2 fw-bold text-success mb-0">KES {{ total_month }}</p>
+                    </div>
+                    <span style="font-size: 24px;">💰</span>
+                </div>
+                <small class="text-muted">Avg per sale: KES {{ avg_sale_value }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Time -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="text-muted small mb-2">All Time</h6>
+                        <p class="fs-2 fw-bold text-warning mb-0">KES {{ total_all_time }}</p>
+                    </div>
+                    <span style="font-size: 24px;">⭐</span>
+                </div>
+                <small class="text-muted">{{ all_time_transactions }} transaction{{ all_time_transactions|pluralize }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Summary -->
+<div class="row g-3 mb-5">
+    <div class="col-md-6 col-lg-3">
         <div class="card shadow-sm border-0">
             <div class="card-body">
-                <h6 class="text-muted mb-3">Sales Activity</h6>
+                <h6 class="text-muted small mb-2">Total Products</h6>
+                <p class="fs-3 fw-bold mb-0">{{ products.count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted small mb-2">Low Stock</h6>
+                <p class="fs-3 fw-bold text-warning mb-0">{{ low_stock_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted small mb-2">Out of Stock</h6>
+                <p class="fs-3 fw-bold text-danger mb-0">{{ out_of_stock }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6 class="text-muted small mb-2">In Stock</h6>
+                <p class="fs-3 fw-bold text-success mb-0">{{ in_stock_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Detailed Views -->
+<div class="row g-4">
+    <!-- Sales Chart -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light p-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-semibold mb-0">7-Day Sales Trend</h6>
+                <small class="text-muted">Last week</small>
+            </div>
+            <div class="card-body">
                 <canvas id="salesChart" height="300"></canvas>
             </div>
         </div>
     </div>
 
-<div class="row g-4">
+    <!-- Quick Stats -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-light p-3">
+                <h6 class="fw-semibold mb-0">Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Daily Average</small>
+                        <strong>KES {{ daily_average }}</strong>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="d-block text-muted mb-1">Stock Health</small>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ stock_health_percent }}%;" aria-valuenow="{{ stock_health_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">{{ in_stock_count }} of {{ products.count }} in stock</small>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <h6 class="small fw-semibold mb-2">Performance</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small>Best Day (Week)</small>
+                        <strong>KES {{ total_week }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Top Products and Recent Sales -->
+<div class="row g-4 mt-0">
     <div class="col-lg-6">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-light p-3">
-                <h6 class="fw-semibold mb-0">Top Products</h6>
+                <h6 class="fw-semibold mb-0">Top Selling Products</h6>
             </div>
             <div class="card-body">
-                {% if products %}
+                {% if top_products %}
                 <div class="list-group list-group-sm">
-                    {% for product in products|slice:":5" %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div>
-                            <p class="mb-0">{{ product.name }}</p>
-                            <small class="text-muted">Stock: {{ product.quantity }} | Price: KES {{ product.selling_price }}</small>
+                    {% for product in top_products %}
+                    <div class="list-group-item border-0 px-0 py-3 d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="mb-1 fw-500">{{ product.product__name }}</p>
+                            <small class="text-muted">{{ product.total_sold }} unit{{ product.total_sold|pluralize }} sold</small>
                         </div>
-                        {% if product.quantity < 10 %}
-                        <span class="badge bg-warning">Low Stock</span>
-                        {% elif product.quantity == 0 %}
-                        <span class="badge bg-danger">Out</span>
-                        {% else %}
-                        <span class="badge bg-success">In Stock</span>
-                        {% endif %}
+                        <strong class="text-primary">KES {{ product.revenue|floatformat:0 }}</strong>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="text-muted mb-0">No products yet. <a href="{% url 'product_create' %}">Add one now</a></p>
+                <p class="text-muted mb-0">No sales data yet.</p>
                 {% endif %}
             </div>
         </div>
@@ -80,28 +193,144 @@
     <div class="col-lg-6">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-light p-3">
-                <h6 class="fw-semibold mb-0">Recent Sales</h6>
+                <h6 class="fw-semibold mb-0">Recent Sales (Today)</h6>
             </div>
             <div class="card-body">
                 {% if sales_today %}
                 <div class="list-group list-group-sm">
-                    {% for sale in sales_today %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
-                        <div>
-                            <p class="mb-0">{{ sale.product.name }}</p>
+                    {% for sale in sales_today|slice:":10" %}
+                    <div class="list-group-item border-0 px-0 py-3 d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="mb-1">{{ sale.product.name }}</p>
                             <small class="text-muted">{{ sale.created_at|date:"h:i A" }} | Qty: {{ sale.quantity_sold }}</small>
                         </div>
-                        <span class="fw-semibold text-success">+KES {{ sale.total_price }}</span>
+                        <strong class="text-success">KES {{ sale.total_price }}</strong>
                     </div>
                     {% endfor %}
                 </div>
+                {% if sales_today.count > 10 %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'sales_history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                {% endif %}
                 {% else %}
-                <p class="text-muted mb-0">No sales recorded today.</p>
+                <p class="text-muted mb-0">No sales recorded today. <a href="{% url 'product_list' %}">Record a sale</a></p>
                 {% endif %}
             </div>
         </div>
     </div>
-
 </div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Prepare data for chart
+    var dailyData = JSON.parse('{{ daily_sales|escapejs }}');
+    var labels = Object.keys(dailyData);
+    var data = Object.values(dailyData);
+
+    // Handle case where all data is 0
+    var maxValue = Math.max(...data);
+    var yAxisMax = maxValue > 0 ? maxValue * 1.2 : 1000;
+
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Daily Sales (KES)',
+                data: data,
+                fill: true,
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                borderColor: '#2563EB',
+                borderWidth: 3,
+                pointBackgroundColor: '#2563EB',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        font: { size: 12, family: "'Inter', sans-serif" },
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 12 },
+                    callbacks: {
+                        label: function(context) {
+                            return 'KES ' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: yAxisMax,
+                    ticks: {
+                        font: { size: 11 },
+                        callback: function(value) {
+                            return 'KES ' + value.toLocaleString();
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .text-primary {
+        color: #2563EB !important;
+    }
+
+    .text-info {
+        color: #06b6d4 !important;
+    }
+
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+
+    .list-group-item:hover {
+        background-color: #f9fafb;
+    }
+</style>
 
 {% endblock %}

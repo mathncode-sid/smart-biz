@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SmartBiz - Admin</title>
 
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #2563EB;
+            --primary-dark: #1d4ed8;
+        }
+
         * {
             font-family: 'Inter', sans-serif;
         }
@@ -21,7 +30,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #fef2f2 0%, #fef3f2 100%);
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
             color: #1f2937;
         }
 
@@ -47,27 +56,27 @@
         }
 
         .sidebar a:hover {
-            background-color: #fef2f2;
+            background-color: #eff6ff;
             color: #1f2937;
             padding-left: 24px;
         }
 
         .sidebar-active {
-            background-color: #fee2e2;
-            color: #dc2626;
+            background-color: #dbeafe;
+            color: #2563eb;
             font-weight: 600;
-            border-left: 3px solid #dc2626;
+            border-left: 3px solid #2563eb;
             padding-left: 17px;
         }
 
         .navbar-dark {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+            background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%) !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .admin-badge {
-            background: #fca5a5;
-            color: #7f1d1d;
+            background: #bfdbfe;
+            color: #1e40af;
             padding: 2px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
@@ -189,9 +198,10 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-sm fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm fixed-top" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{% url 'admin_dashboard' %}">
+            <a class="navbar-brand fw-bold" href="{% url 'admin_dashboard' %}" style="display: flex; align-items: center; gap: 8px;">
+                <img src="{% static 'images/smartbiz-logo.svg' %}" alt="SmartBiz" height="32" style="filter: brightness(0) invert(1);">
                 SmartBiz <span class="admin-badge">ADMIN</span>
             </a>
             
