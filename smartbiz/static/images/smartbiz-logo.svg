@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <g transform="translate(10, 10)">
+    <circle cx="30" cy="30" r="30" fill="#2563EB" />
+    <path d="M30 15 C 20 15, 15 25, 30 30 C 45 35, 40 45, 30 45" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" />
+  </g>
+
+  <text x="80" y="52" font-family="'Inter', 'Roboto', sans-serif" font-size="42" fill="#0F172A" style="font-weight: 700; letter-spacing: -1px;">SmartBiz</text>
+</svg>
